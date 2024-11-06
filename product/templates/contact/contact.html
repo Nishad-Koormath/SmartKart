@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block content %}
+<style>
+    .contact-section {
+        padding: 5rem 0;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+        min-height: calc(100vh - 76px);
+    }
+
+    .contact-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -5%;
+        width: 45%;
+        height: 100%;
+        background: white;
+        transform: skewX(-20deg);
+        z-index: 1;
+    }
+
+    .contact-content {
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .contact-info {
+        margin-bottom: 2rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contact-icon i {
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .contact-form .form-control {
+        border-radius: 8px;
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .contact-form textarea.form-control {
+        min-height: 150px;
+    }
+
+    .btn-submit {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-submit:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #000;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .contact-section::after {
+            width: 100%;
+            right: -75%;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .contact-section {
+            padding: 3rem 1rem;
+        }
+        
+        .contact-content {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<section class="contact-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="contact-content">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h2 class="section-title">Get In Touch</h2>
+                            <p class="section-subtitle">Have any questions? We'd love to hear from you.</p>
+                            
+                            <div class="contact-info">
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Address</h5>
+                                        <p class="mb-0">123 Store Street, City, Country</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="bi bi-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Email</h5>
+                                        <p class="mb-0">info@example.com</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="contact-item">
+                                    <div class="contact-icon">
+                                        <i class="bi bi-telephone"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Phone</h5>
+                                        <p class="mb-0">+1 234 567 890</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <form class="contact-form" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" placeholder="Your Name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="email" class="form-control" placeholder="Your Email" required>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Subject">
+                                <textarea class="form-control" placeholder="Your Message" required></textarea>
+                                <button type="submit" class="btn-submit">
+                                    Send Message
+                                    <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

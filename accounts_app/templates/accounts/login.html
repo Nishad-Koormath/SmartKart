@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+    .login-section {
+        padding: 3rem 0;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+        min-height: calc(100vh - 76px);
+    }
+
+    .login-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -5%;
+        width: 45%;
+        height: 100%;
+        background: white;
+        transform: skewX(-20deg);
+        z-index: 1;
+    }
+
+    .login-content {
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #000;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .login-form {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .login-form p {
+        margin-bottom: 1.5rem;
+    }
+
+    .login-form label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .login-form input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .login-form input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .login-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .login-button:hover {
+        background: var(--primary-color-dark);
+    }
+
+    .register-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: #666;
+    }
+
+    .register-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 991.98px) {
+        .login-section::after {
+            width: 100%;
+            right: -75%;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .login-section {
+            padding: 3rem 1rem;
+        }
+        
+        .login-content {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<section class="login-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="login-content">
+                    <h2 class="section-title text-center">Welcome Back</h2>
+                    <p class="section-subtitle text-center">Login to your account</p>
+                    
+                    <div class="login-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="login-button">Login</button>
+                        </form>
+                        <p class="register-link">
+                            Don't have an account? <a href="{% url 'register' %}">Register here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

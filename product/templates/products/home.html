@@ -1,0 +1,60 @@
+{% extends 'base.html' %} 
+
+{% block title %} Home - E-Commerce {% endblock %} 
+
+{% block content %}
+<style>
+  .card {
+    background: white;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  .card_image {
+    padding: 10px;
+  }
+  .card img {
+    object-fit: contain;
+  }
+</style>
+<div class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Welcome to Our E-Commerce Store</h1>
+      <p class="hero-description">
+        Discover the latest products and trends in our online store.
+      </p>
+    </div>
+  </div>
+  <div class="container my-5">
+    <h2 class="hero-title mb-4">Latest Products</h2>
+    <div class="row">
+      {% for product in latest_products %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 hero-content">
+          <div class="card_image">
+            <img
+              src="{{ product.image.url }}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+              height="200px"
+            />
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description|truncatewords:20 }}</p>
+            <p class="card-text">Price: ${{ product.price|floatformat:2 }}</p>
+            <a href="{% url 'details' product.id %}" class="btn btn-add-bag">
+              <i class="bi bi-bag-plus"></i> Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

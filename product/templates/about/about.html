@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+<style>
+    .about-section {
+        padding: 3rem 0;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        position: relative;
+        overflow: hidden;
+        min-height: calc(100vh - 76px);
+    }
+
+    .about-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -5%;
+        width: 45%;
+        height: 100%;
+        background: white;
+        transform: skewX(-20deg);
+        z-index: 1;
+    }
+
+    .about-content {
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .about-info {
+        margin-bottom: 2rem;
+    }
+
+    .about-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-icon {
+        width: 45px;
+        height: 45px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .about-icon i {
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #000;
+        margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .about-text {
+        color: #333;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .about-section::after {
+            width: 100%;
+            right: -75%;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .about-section {
+            padding: 3rem 1rem;
+        }
+        
+        .about-content {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<section class="about-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="about-content">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h2 class="section-title">About Us</h2>
+                            <p class="section-subtitle">Our story, mission, and vision.</p>
+                            
+                            <div class="about-info">
+                                <div class="about-item">
+                                    <div class="about-icon">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Founded</h5>
+                                        <p class="mb-0">Established in 2024</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="about-item">
+                                    <div class="about-icon">
+                                        <i class="bi bi-graph-up"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Growth</h5>
+                                        <p class="mb-0">Leading e-commerce platform</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="about-item">
+                                    <div class="about-icon">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Focus</h5>
+                                        <p class="mb-0">Customer satisfaction</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <div class="about-description">
+                                <p class="about-text">
+                                    At MyShop, we are dedicated to providing top-quality products to our customers.
+                                    Established in 2024, we aim to become a leading platform in e-commerce, ensuring 
+                                    customer satisfaction and excellence in service. Our journey started with a simple idea - 
+                                    to make shopping easy, accessible, and enjoyable for everyone.
+                                </p>
+
+                                <div class="about-mission">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="about-icon">
+                                            <i class="bi bi-bullseye"></i>
+                                        </div>
+                                        <h5 class="mb-0">Our Mission</h5>
+                                    </div>
+                                    <p class="about-text">
+                                        To empower our customers with a seamless shopping experience, offering a wide 
+                                        selection of high-quality products that meet their needs and exceed their expectations.
+                                    </p>
+                                </div>
+
+                                <div class="about-vision">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="about-icon">
+                                            <i class="bi bi-eye"></i>
+                                        </div>
+                                        <h5 class="mb-0">Our Vision</h5>
+                                    </div>
+                                    <p class="about-text">
+                                        To be recognized globally as a trusted e-commerce platform that prioritizes customer 
+                                        satisfaction, sustainability, and innovation.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

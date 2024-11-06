@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ product.name }} - Details
+{% endblock %}
+
+{% block content %}
+<style>
+  .product-details-section {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .product-details-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -5%;
+    width: 45%;
+    height: 100%;
+    background: white;
+    transform: skewX(-20deg);
+    z-index: 1;
+  }
+  .details-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+  }
+  .product-image {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+  .product-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+  .product-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+  }
+  .product-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  .btn-add-to-cart {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  .btn-add-to-cart:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .quantity-btn {
+    background: #f8f9fa;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .quantity-btn:hover {
+    background: #e9ecef;
+  }
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 0.5rem;
+  }
+  @media (max-width: 767.98px) {
+    .product-details-section::after {
+      width: 100%;
+      right: -75%;
+    }
+    .product-image {
+      height: 300px;
+    }
+  }
+</style>
+
+<div class="product-details-section">
+  <div class="container">
+    <div class="details-container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        </div>
+        <div class="col-md-6">
+          <h1 class="product-title">{{ product.name }}</h1>
+          <div class="product-price">${{ product.price|floatformat:2 }}</div>
+          <p class="product-description">{{ product.description }}</p>
+
+          <div class="quantity-selector">
+            <button class="quantity-btn" onclick="decrementQuantity()">-</button>
+            <input type="number" class="quantity-input" value="1" min="1" id="quantity">
+            <button class="quantity-btn" onclick="incrementQuantity()">+</button>
+          </div>
+          <form action="{% url 'add_cart' product.id %}" method="post">
+            {% csrf_token %}
+          <button class="btn-add-to-cart">
+            <i class="bi bi-cart-plus"></i>
+            Add to Cart
+          </button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function incrementQuantity() {
+  const input = document.getElementById('quantity');
+  input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity() {
+  const input = document.getElementById('quantity');
+  if (parseInt(input.value) > 1) {
+    input.value = parseInt(input.value) - 1;
+  }
+}
+</script>
+{% endblock %}
