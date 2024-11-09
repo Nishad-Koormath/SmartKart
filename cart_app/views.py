@@ -6,6 +6,8 @@ from django.http import HttpResponseBadRequest
 from decimal import Decimal
 from django.views.decorators.http import require_POST
 from django.http import Http404
+from django.urls import reverse
+
 
 @login_required
 @require_POST
@@ -16,7 +18,8 @@ def add_to_cart(request, id):
     cart_item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
     cart_item.quantity += 1
     cart_item.save()
-    return redirect('cart')
+    # return redirect('cart')
+    return redirect(reverse('details', args=[id]))
 
 # @login_required
 def cart_page(request):
@@ -25,8 +28,8 @@ def cart_page(request):
         cart = Cart.objects.filter(user=request.user).first()
         cart_items = cart.cartitem_set.all() if cart else []
 
-        subtotal = sum(item.get_total() for item in cart_items) if cart_items else Decimal(0.00)
-        shipping = Decimal(5.00) if cart_items else Decimal(0.00)
+        subtotal = sum(item.get_total() for item in cart_items) 
+        shipping = Decimal(5.00) 
         total = subtotal + shipping
 
         return render(request, 'cart/cart.html', {

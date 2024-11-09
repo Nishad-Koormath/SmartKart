@@ -33,6 +33,3 @@ def login_view(request):
         form = AuthenticationForm()
         
     return render(request, 'accounts/login.html', {'form': form})
-
-def contact(request):
-    return render(request, 'accounts/contract.html')

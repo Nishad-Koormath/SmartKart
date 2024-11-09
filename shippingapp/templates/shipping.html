@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Shipping Address
+{% endblock %}
+
+{% block content %}
+<style>
+  .address-section {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    padding: 2.5rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 80vh;
+  }
+  .address-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -5%;
+    width: 45%;
+    height: 100%;
+    background: white;
+    transform: skewX(-20deg);
+    z-index: 1;
+  }
+  .address-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .address-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+  }
+  .saved-addresses-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .btn-continue {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+  .btn-continue:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+  }
+  .btn-back {
+    color: var(--primary-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+  .btn-back:hover {
+    color: var(--secondary-color);
+  }
+  .saved-addresses {
+    margin-bottom: 2rem;
+  }
+  .address-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .address-card:hover {
+    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+  }
+  .address-card.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+  }
+  @media (max-width: 767.98px) {
+    .address-section::after {
+      width: 100%;
+      right: -75%;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="address-section">
+  <div class="container">
+    <div class="address-container">
+      <h1 class="address-title">Shipping Address</h1>
+
+      <form action="{% url 'shipping_address' %}" method="POST">
+        {% csrf_token %}
+        {% if saved_address %}
+        <div class="saved-addresses">
+          <h3 class="mb-3 saved-addresses-title">Saved Addresses</h3>
+          {% for address in saved_address %}
+          <div class="address-card">
+            <input type="radio" name="selected_address" value="{{ address.id }}" id="address_{{ address.id }}">
+            <label for="address_{{ address.id }}">
+              <strong>{{ address.first_name }} {{ address.last_name}}</strong><br>
+              {{ address.street_address }}<br>
+              {{ address.city }}, {{ address.state }} {{ address.zip_code }}<br>
+              {{ address.country }}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+          <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+            {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+          {{ form.last_name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.street_address.id_for_label }}" class="form-label">Street Address</label>
+          {{ form.street_address }}
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+            {{ form.city }}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.state.id_for_label }}" class="form-label">State</label>
+            {{ form.state }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.zip_code.id_for_label }}" class="form-label">ZIP/Postal Code</label>
+            {{ form.zip_code }}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+            {{ form.country }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="{{ form.phone.id_for_label }}" class="form-label">Phone Number</label>
+          {{ form.phone }}
+        </div>
+
+        <button type="submit" class="btn-continue">
+          <i class="bi bi-arrow-right"></i>
+          Continue to Payment
+        </button>
+      </form>
+
+      <a href="{% url 'cart' %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Back to Cart
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

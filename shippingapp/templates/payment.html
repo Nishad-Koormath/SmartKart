@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Payment Method
+{% endblock %}
+
+{% block content %}
+<style>
+  .payment-section {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    padding: 2.5rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 80vh;
+  }
+  .payment-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -5%;
+    width: 45%;
+    height: 100%;
+    background: white;
+    transform: skewX(-20deg);
+    z-index: 1;
+  }
+  .payment-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .payment-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+  }
+  .payment-option {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .payment-option:hover {
+    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+  }
+  .payment-option.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+  }
+  .payment-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .payment-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+  }
+  .payment-info {
+    flex-grow: 1;
+  }
+  .payment-method-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+  }
+  .payment-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  .order-summary {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+  .summary-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .summary-total {
+    border-top: 2px solid #dee2e6;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    font-weight: 600;
+  }
+  .btn-place-order {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+  .btn-place-order:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+  }
+  .btn-back {
+    color: var(--primary-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+  .btn-back:hover {
+    color: var(--secondary-color);
+  }
+  @media (max-width: 767.98px) {
+    .payment-section::after {
+      width: 100%;
+      right: -75%;
+    }
+  }
+</style>
+
+<div class="payment-section">
+  <div class="container">
+    <div class="payment-container">
+      <h1 class="payment-title">Payment Method</h1>
+
+      <form action="" method="POST">
+        {% csrf_token %}
+        
+        <div class="payment-option selected">
+          <div class="payment-details">
+            <div class="payment-icon">
+              <i class="bi bi-cash"></i>
+            </div>
+            <div class="payment-info">
+              <div class="payment-method-title">Cash on Delivery</div>
+              <div class="payment-description">Pay with cash when your order arrives</div>
+            </div>
+            <input type="radio" name="payment_method" value="cod" checked style="accent-color: var(--primary-color);">
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <h3 class="summary-title">Order Summary</h3>
+          <div class="summary-item">
+            <span>Subtotal</span>
+            <span>${{ subtotal|floatformat:2 }}</span>
+          </div>
+          <div class="summary-item">
+            <span>Shipping</span>
+            <span>${{ shipping|floatformat:2 }}</span>
+          </div>
+          <div class="summary-item summary-total">
+            <span>Total</span>
+            <span>${{ total }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-place-order">
+          <i class="bi bi-bag-check"></i>
+          Place Order
+        </button>
+      </form>
+
+      <a href="{% url 'shipping_address' %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Back to Shipping
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
