@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from .models import Address, Order, Order_confirm
+from .models import Address, Order, Order_confirm, OrderItem
 from .forms import addressForm
 from cart_app.models import Cart
 from decimal import Decimal
@@ -45,18 +45,24 @@ def payment(request):
     subtotal = sum(item.get_total() for item in cart_items)
     shipping = Decimal(5.00) if cart_items else Decimal(0.00)
     total = subtotal + shipping
+    order_id = uuid.uuid4().hex[:8].upper()
+    
+
+    
+
 
     if request.method == 'POST':
         # Create the order confirmation
-        order_confirm = Order_confirm.objects.create(user=request.user)
+        order_confirm = Order_confirm.objects.create(user=request.user,order_id=order_id)
 
         # Clear cart items after successful payment
         cart.cartitem_set.all().delete()
 
         return render(request, 'order_success.html', {
             'order_date': order_confirm.order_date,
-            'total': total,
-            'user': request.user,
+            'order_id' : order_confirm.order_id,
+            'total': total,            
+            
         })
 
     # For GET requests, show the payment page with totals
@@ -67,8 +73,8 @@ def payment(request):
     })
 @login_required
 def order_successful(request):
+    
     cart = Cart.objects.filter(user=request.user).first()
-    print( cart)
     if not cart :
         return redirect('home')
     cart_items = cart.cartitem_set.all()
@@ -94,14 +100,28 @@ def order_successful(request):
         order_date=order_confirm,  # Link the order to the Order_confirm instance
         status="pending"
     )
+    
+        # Create OrderItems for each item in cart
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price
+        )
+    
     # Clear cart items if order is successful
     cart.cartitem_set.all().delete()
+    ordered_items = Order.objects.filter(user= request.user)
 
     
     return render(request, 'order_success.html', {
-        'order_number': order.order_id,
-        'order_date': order.order_date,
-        'total': order.total_amount
+        'order_number': ordered_items.order_id,
+        'order_date': ordered_items.order_date,
+        'total': ordered_items.total_amount
     })
+def order_list(request):
+    orders = Order.objects.filter(user=request.user).prefetch_related('items__product')
+    return render(request, 'ordered_items.html', {'orders': orders})
 
 

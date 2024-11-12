@@ -92,7 +92,7 @@
         right: -5%;
         width: 45%;
         height: 100%;
-        background: white;
+        background:white;
         transform: skewX(-20deg);
         z-index: 1;
       }
@@ -254,6 +254,11 @@
             <li class="nav-item">
                 <a class="nav-link {% if request.path == '/about/' %}active{% endif %}" href="{% url 'about' %}">ABOUT</a>
             </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == 'orders/' %}active{% endif %}" href="{% url 'order_list' %}">ORDERS</a>
+          </li>
+          {% endif %}
         </ul>
         
           <div class="utility-icons">
