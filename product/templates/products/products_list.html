@@ -123,7 +123,7 @@ Product List
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text">{{ product.description|truncatewords:20 }}</p>
               <p class="card-text">Price: ${{ product.price|floatformat:2 }}</p>
-              <a href="{% url 'details' product.id %}" class="btn btn-add-bag">
+              <a href="{% url 'product_details' product.id %}" class="btn btn-add-bag">
                 <i class="bi bi-bag-plus"></i> Details
               </a>
             </div>
