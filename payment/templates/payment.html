@@ -47,19 +47,16 @@ Payment Method
     margin-bottom: 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
   .payment-option:hover {
     border-color: var(--primary-color);
     background-color: #f8f9fa;
   }
-  .payment-option.selected {
-    border-color: var(--primary-color);
-    background-color: rgba(var(--primary-color-rgb), 0.1);
-  }
-  .payment-details {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  .payment-option input[type=radio] {
+    accent-color: var(--primary-color);
   }
   .payment-icon {
     font-size: 1.5rem;
@@ -133,12 +130,6 @@ Payment Method
   .btn-back:hover {
     color: var(--secondary-color);
   }
-  @media (max-width: 767.98px) {
-    .payment-section::after {
-      width: 100%;
-      right: -75%;
-    }
-  }
 </style>
 
 <div class="payment-section">
@@ -146,41 +137,55 @@ Payment Method
     <div class="payment-container">
       <h1 class="payment-title">Payment Method</h1>
 
-      <form action="" method="POST">
+      <form id="payment-form">
         {% csrf_token %}
-        
-        <div class="payment-option selected">
-          <div class="payment-details">
-            <div class="payment-icon">
-              <i class="bi bi-cash"></i>
-            </div>
-            <div class="payment-info">
-              <div class="payment-method-title">Cash on Delivery</div>
-              <div class="payment-description">Pay with cash when your order arrives</div>
-            </div>
-            <input type="radio" name="payment_method" value="cod" checked style="accent-color: var(--primary-color);">
+
+        <label class="payment-option">
+          <div class="payment-icon">
+            <i class="bi bi-cash"></i>
           </div>
-        </div>
+          <div class="payment-info">
+            <div class="payment-method-title">Cash on Delivery</div>
+            <div class="payment-description">Pay with cash when your order arrives</div>
+          </div>
+          <input type="radio" name="payment_method" value="cod" checked>
+        </label>
+
+        <label class="payment-option">
+          <div class="payment-icon">
+            <i class="bi bi-credit-card"></i>
+          </div>
+          <div class="payment-info">
+            <div class="payment-method-title">Online Payment</div>
+            <div class="payment-description">Pay securely using Razorpay</div>
+          </div>
+          <input type="radio" name="payment_method" value="razorpay">
+        </label>
 
         <div class="order-summary">
           <h3 class="summary-title">Order Summary</h3>
           <div class="summary-item">
             <span>Subtotal</span>
-            <span>${{ subtotal|floatformat:2 }}</span>
+            <span>₹{{ subtotal|floatformat:2 }}</span>
           </div>
           <div class="summary-item">
             <span>Shipping</span>
-            <span>${{ shipping|floatformat:2 }}</span>
+            <span>₹{{ shipping|floatformat:2 }}</span>
           </div>
           <div class="summary-item summary-total">
             <span>Total</span>
-            <span>${{ total }}</span>
+            <span>₹{{ total }}</span>
           </div>
         </div>
 
-        <button type="submit" class="btn-place-order">
+        <button type="button" id="cod-btn" class="btn-place-order">
           <i class="bi bi-bag-check"></i>
-          Place Order
+          Place Order (COD)
+        </button>
+
+        <button type="button" id="razorpay-btn" class="btn-place-order" style="display:none;">
+          <i class="bi bi-credit-card"></i>
+          Pay Now
         </button>
       </form>
 
@@ -192,4 +197,62 @@ Payment Method
   </div>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const codBtn = document.getElementById('cod-btn');
+const razorBtn = document.getElementById('razorpay-btn');
+
+document.querySelectorAll('input[name="payment_method"]').forEach(input => {
+  input.addEventListener('change', () => {
+    if (input.value === 'cod' && input.checked) {
+      codBtn.style.display = 'block';
+      razorBtn.style.display = 'none';
+    } else if (input.value === 'razorpay' && input.checked) {
+      codBtn.style.display = 'none';
+      razorBtn.style.display = 'block';
+    }
+  });
+});
+
+codBtn.addEventListener('click', () => {
+  alert("Cash on Delivery selected — Order placed!");
+  window.location.href = "/";
+});
+
+razorBtn.addEventListener('click', () => {
+  var options = {
+      "key": "{{ razorpay_key|escapejs }}",
+      "amount": "{{ amount_in_paise }}",
+      "currency": "INR",
+      "name": "My Shop",
+      "description": "Test Transaction",
+      "order_id": "{{ razorpay_order_id|escapejs }}",
+      "handler": function (response) {
+          fetch("{% url 'verify_payment' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+              },
+              body: JSON.stringify(response)
+          })
+          .then(res => res.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  alert("Payment Successful!");
+                  window.location.href = "/";
+              } else {
+                  alert("Payment Failed");
+              }
+          })
+      },
+      "theme": { "color": "#3399cc" }
+  };
+
+  console.log("Razorpay options:", options);
+  var rzp = new Razorpay(options);
+  rzp.open();
+});
+
+</script>
 {% endblock %}

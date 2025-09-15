@@ -1,80 +1,82 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from cart_app.models import Cart
 from decimal import Decimal
-from django.utils import timezone
 import uuid
-
-# Create your views here.
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from shippingapp.models import Address, Order_confirm, Order, OrderItem
+from django.utils import timezone
+import json
 
 @login_required
 def payment(request):
     cart = Cart.objects.filter(user=request.user).first()
     if not cart:
-        return redirect('home')  # Redirect to home if no cart exists
+        return redirect('home')
 
     cart_items = cart.cartitem_set.all()
     subtotal = sum(item.get_total() for item in cart_items)
     shipping = Decimal(5.00) if cart_items else Decimal(0.00)
     total = subtotal + shipping
-    order_id = uuid.uuid4().hex[:8].upper()
-    
+    amount_in_paise = int(total * 100)
 
-    
-
-
-    if request.method == 'POST':
-        # Create the order confirmation
-        order_confirm = Order_confirm.objects.create(user=request.user,order_id=order_id)
-
-        # Clear cart items after successful payment
-        cart.cartitem_set.all().delete()
-
-        return render(request, 'order_success.html', {
-            'order_date': order_confirm.order_date,
-            'order_id' : order_confirm.order_id,
-            'total': total,            
-            
+    if request.method == 'GET':
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        order = client.order.create({
+            'amount': amount_in_paise,
+            'currency': 'INR',
+            'payment_capture': 1
         })
 
-    # For GET requests, show the payment page with totals
-    return render(request, 'payment.html', {
-        'subtotal': subtotal,
-        'shipping': shipping,
-        'total': total,
-    })
+        return render(request, 'payment.html', {
+            'subtotal': subtotal,
+            'shipping': shipping,
+            'total': total,
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'razorpay_order_id': order['id'],
+            'amount_in_paise': amount_in_paise
+        })
 
+
+@csrf_exempt
 @login_required
-def order_successful(request):
-    
+def verify_payment(request):
+    data = json.loads(request.body)
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    params_dict = {
+        'razorpay_order_id': data['razorpay_order_id'],
+        'razorpay_payment_id': data['razorpay_payment_id'],
+        'razorpay_signature': data['razorpay_signature']
+    }
+
+    try:
+        client.utility.verify_payment_signature(params_dict)
+    except:
+        return JsonResponse({'status': 'failure'}, status=400)
+
     cart = Cart.objects.filter(user=request.user).first()
-    if not cart :
-        return redirect('home')
     cart_items = cart.cartitem_set.all()
     subtotal = sum(item.get_total() for item in cart_items)
     shipping = Decimal(5.00) if cart_items else Decimal(0.00)
     total = subtotal + shipping
-    
-    # Generate a unique order number
     order_number = uuid.uuid4().hex[:8].upper()
-    
-    # Get the user's address or fallback to the first address
     address = Address.objects.filter(user=request.user).first()
-    
-    # Create an Order_confirm instance (you can store the order date here)
-    order_confirm = Order_confirm.objects.create(user=request.user)
-    
-    # Create a new Order instance
+
+    order_confirm = Order_confirm.objects.create(user=request.user, order_id=order_number)
+
     order = Order.objects.create(
         user=request.user,
-        address= address,  # Assuming the first address is used
+        address=address,
         order_id=order_number,
         total_amount=total,
-        order_date=order_confirm,  # Link the order to the Order_confirm instance
-        status="pending"
+        order_date=timezone.now(),
+        status='pending'
     )
-    
-        # Create OrderItems for each item in cart
+
     for item in cart_items:
         OrderItem.objects.create(
             order=order,
@@ -82,17 +84,7 @@ def order_successful(request):
             quantity=item.quantity,
             price=item.product.price
         )
-    
-    # Clear cart items if order is successful
+
     cart.cartitem_set.all().delete()
-    ordered_items = Order.objects.filter(user= request.user)
 
-    
-    return render(request, 'order_success.html', {
-        'order_number': ordered_items.order_id,
-        'order_date': ordered_items.order_date,
-        'total': ordered_items.total_amount
-    })
-
-
-
+    return JsonResponse({'status': 'success'})
