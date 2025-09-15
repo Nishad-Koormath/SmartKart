@@ -2,10 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import CartItem, Cart
 from product.models import Product
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest
 from decimal import Decimal
 from django.views.decorators.http import require_POST
-from django.http import Http404
 from django.urls import reverse
 
 
@@ -13,18 +11,15 @@ from django.urls import reverse
 @require_POST
 def add_to_cart(request, id):
     product = get_object_or_404(Product, id=id)
-    user = request.user
-    cart, _ = Cart.objects.get_or_create(user=user)
-    cart_item, _ = CartItem.objects.get_or_create(cart=cart, product=product)
-    cart_item.quantity += 1
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    if not created:
+        cart_item.quantity += 1
     cart_item.save()
-    # return redirect('cart')
     return redirect(reverse('details', args=[id]))
 
-# @login_required
 def cart_page(request):
-    user= request.user
-    if  user.is_authenticated:
+    if  request.user.is_authenticated:
         cart = Cart.objects.filter(user=request.user).first()
         cart_items = cart.cartitem_set.all() if cart else []
 
