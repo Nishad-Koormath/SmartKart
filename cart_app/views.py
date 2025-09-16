@@ -15,26 +15,24 @@ def add_to_cart(request, id):
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
     if not created:
         cart_item.quantity += 1
-    cart_item.save()
-    return redirect(reverse('details', args=[id]))
+        cart_item.save()
+    return redirect(reverse('product_details', args=[id]))
 
+@login_required
 def cart_page(request):
-    if  request.user.is_authenticated:
-        cart = Cart.objects.filter(user=request.user).first()
-        cart_items = cart.cartitem_set.all() if cart else []
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_items = cart.cartitem_set.all() if cart else []
 
-        subtotal = sum(item.get_total() for item in cart_items) 
-        shipping = Decimal(5.00) 
-        total = subtotal + shipping
+    subtotal = sum(item.get_total() for item in cart_items) 
+    shipping = Decimal(5.00) if cart_items else Decimal('0.00')
+    total = subtotal + shipping
 
-        return render(request, 'cart/cart.html', {
-            'cart_items': cart_items,
-            'subtotal': subtotal,
-            'shipping': shipping,
-            'total': total,
-        })
-    else:
-        return render(request, 'cart/not_login.html')
+    return render(request, 'cart/cart.html', {
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'shipping': shipping,
+        'total': total,
+    })
 
 @login_required
 @require_POST
@@ -58,4 +56,9 @@ def decrease_quantity(request, item_id):
 def remove_item(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     cart_item.delete()
+    return redirect('cart')
+
+@login_required
+def clear_cart(request):
+    CartItem.objects.filter(user=request.user).delete()
     return redirect('cart')
