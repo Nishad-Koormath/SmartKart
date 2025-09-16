@@ -7,4 +7,6 @@ urlpatterns = [
     path('increase/<int:item_id>/', views.increase_quantity, name='increase_quantity'),
     path('decrease/<int:item_id>/', views.decrease_quantity, name='decrease_quantity'),
     path('remove/<int:item_id>/', views.remove_item, name='remove_item'),
+    path('clear/', views.clear_cart, name='clear_cart'),
+
 ]
